@@ -1,0 +1,16 @@
+{
+  "name": "LetsC",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "azure-mobile-apps-client": "^2.0.0-beta5",
+    "express": "^4.14.0",
+    "watson-developer-cloud": "^2.8.1"
+  }
+}
