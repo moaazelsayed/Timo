@@ -2,7 +2,7 @@
 
 <html>
 	<head>
-		<title>Timo</title>
+		<title>TEmo</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -31,12 +31,12 @@
 			<section id="header">
 				<div class="inner">
 					<span class="icon major fa-medkit"></span>
-					<h1>Hi, I'm <strong>Timo</strong>!<br />
+					<h1>Hi, I'm <strong>TEmo</strong>!<br />
 						We'll get through the worst together.</h1>
 					<p>I use Watson for sentiment analysis, and talk back and forth with you until you feel better!</p>
 					
 					<ul class="actions">
-						<li><a href="#one" class="button scrolly">Start</a></li>
+						<li><a href="#one" id="start_prg" class="button scrolly">Start</a></li>
 					</ul>
 				</div>
 			</section>
@@ -54,53 +54,126 @@
 						</div>
 						<div class="6u$ 12u$(medium) important(medium)">
 							<span class="image fit">
-								<input id="analysis" class="controls" type="file" capture="microphone" accept="audio/*;capture=microphone">
+								<!--<input id="analysis" class="controls" type="file" capture="microphone" accept="audio/*;capture=microphone">-->
+								<div id="reply"></div><br/>
+								<div id="watson"></div>
 							</span>
 						</div>
 
 						<div class="6u$ 12u$(medium) important(medium)">
 							<span class="image fit">
-								<img id="frame" class="img-rounded">
-								<h2 id="frameLabel"></h2>
+								<form action="/" id="myForm" method="post">
+									<button type="submit" id="formButton" value="Submit"></button>
+								</form>
 							</span>
 						</div>
 
 					</div>
 				</div>
 			</section>
-			<script type="text/javascript">
-				//var listener = new webspeech.Listener();
-				var triggerText = "let's see what's in front of me";
-				var camera = document.getElementById('camera');
-				//jQuery.noConflict();
-			    $(function() {
-			        listener.listen("en", function(text) {
-			        	console.log(text);
-			            if (triggerText.indexOf(text) !== -1){
-			            	var speaker = new webspeech.Speaker();
-    						speaker.speak("en", "let me check!");
-			            	camera.focus();
-			            	camera.click();
-			            }
-			        });
-			    })
-			</script>
-			<script type="text/javascript">
-				var camera = document.getElementById('camera');
-				var frame = document.getElementById('frame');
-				var frameLabel = document.getElementById('frameLabel');
 
-				camera.addEventListener('change', function(e) {
-					var file = e.target.files[0]; 
-					// Do something with the file.
-					//var fileURL = URL.createObjectURL(file);
-					//frame.src = fileURL;
-					//console.log(fileURL);
-					$(function() {				      
+			<script type="text/javascript">
+			$(function() {
+				var brain_analysis = {
+					'anger': 0.1,
+					'disgust': 0.2,
+					'fear': 0.1,
+					'joy': 0.2,
+					'sadness': 0.9,
+				}
 
+				var start = document.getElementById('start_prg');
+
+				start.addEventListener('click', function(e) {
+					var major_feeling = (brain_analysis.joy > brain_analysis.sadness)? 'joy' : 'sadness';
+
+					$(function() {
+						setTimeout(function(){ 
+							emot_rout(major_feeling);
+						}, 3000);
 				    });
 				});
-			
+
+				
+				var emot_rout = function(emotion) {
+					var myint = (Math.floor(Math.random() * 6) + 1);
+					var speaker = new webspeech.Speaker();
+    						
+					if (emotion == 'sadness'){
+						switch(myint) {
+						    case 1:
+						        speaker.speak("en", "I have been feeling concerned about you lately. Can you talk to me about it?");
+						        speaker.onEnd(function(){ capture_voice(); });
+						        break;
+						    case 2:
+						        speaker.speak("en", "I’m sorry you're in so much pain. Can you talk to me about it?");
+						        speaker.onEnd(function(){ capture_voice(); });
+						        break;
+					        case 3:
+						        speaker.speak("en", "Do you feel like talking? I’m glad to listen. It may help you.");
+						        speaker.onEnd(function(){ capture_voice(); });
+						        break;
+						    case 4:
+						        speaker.speak("en", "I can't imagine what it's like. It must be very difficult. We can talk if you want.");
+						        speaker.onEnd(function(){ capture_voice(); });
+						        break;
+						    default:
+						        speaker.speak("en", "Have you thought about getting help?");
+						        speaker.onEnd(function(){ capture_voice(); });
+						}
+					} else if (emotion == 'joy') {
+						switch(myint) {
+						    case 1:
+						        speaker.speak("en", "What was your favourite part of the week?");
+						        speaker.onEnd(function(){ capture_voice(); });
+						        break;
+						    case 2:
+						        speaker.speak("en", "What are you going to eat for dinner tonight?");
+						        speaker.onEnd(function(){ capture_voice(); });
+						        break;
+					        case 3:
+						        speaker.speak("en", "Today is your day. How about some exercise?");
+						        speaker.onEnd(function(){ capture_voice(); });
+						        break;
+						    default:
+						        speaker.speak("en", "I'm glad you're doing ok.");
+						        speaker.onEnd(function(){ capture_voice(); });
+						}
+					} else {
+						speaker.speak("en", "What ever is going on now, do you want to talk about it?");
+						speaker.onEnd(function(){ capture_voice(); });
+					}
+
+				}
+
+				var text_reply = document.getElementById('reply');
+				var capture_voice = function() {
+					var listener = new webspeech.Listener();
+
+				    $(function() {
+				        listener.listen("en", function(text) {
+				        	console.log(text);
+				        	text_reply.innerHTML = text;
+
+				        });
+				    })
+				}
+
+				// var analysis = document.getElementById('analysis');
+				// var frame = document.getElementById('frame');
+				// var frameLabel = document.getElementById('frameLabel');
+
+				// analysis.addEventListener('change', function(e) {
+				// 	var file = e.target.files[0]; 
+				// 	// Do something with the file.
+				// 	//var fileURL = URL.createObjectURL(file);
+				// 	//frame.src = fileURL;
+				// 	//console.log(fileURL);
+				// 	$(function() {				      
+
+				//     });
+				
+			});
 			</script>
 	</body>
 </html>
